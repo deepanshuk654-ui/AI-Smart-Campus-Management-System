@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Edit Notice - Smart Campus{% endblock %}
+{% block page_title %}Edit Notice{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card-box">
+            <div class="card-box-header">
+                <h6><i class="fas fa-edit me-2"></i>Edit Notice</h6>
+            </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Notice Title <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control" value="{{ notice.title }}" required maxlength="200">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                    <select name="category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if notice.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Content <span class="text-danger">*</span></label>
+                    <textarea name="content" class="form-control" rows="8" required>{{ notice.content }}</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a href="{{ url_for('notices.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

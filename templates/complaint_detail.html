@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Complaint #{{ complaint.id }} - Smart Campus{% endblock %}
+{% block page_title %}Complaint Detail{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card-box">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Complaint #{{ complaint.id }}</h5>
+                <span class="status-badge status-{{ complaint.status|lower|replace(' ', '-') }} fs-6">{{ complaint.status }}</span>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">Title</div>
+                <div class="detail-value fw-semibold">{{ complaint.title }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Category</div>
+                <div class="detail-value"><span class="badge bg-secondary">{{ complaint.category }}</span></div>
+            </div>
+            {% if session.user_role == 'admin' %}
+            <div class="detail-row">
+                <div class="detail-label">Submitted By</div>
+                <div class="detail-value">{{ complaint.user_name }} ({{ complaint.user_email }})</div>
+            </div>
+            {% endif %}
+            <div class="detail-row">
+                <div class="detail-label">Submitted On</div>
+                <div class="detail-value">{{ complaint.created_at[:19]|replace('T', ' ') }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ complaint.updated_at[:19]|replace('T', ' ') }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Description</div>
+                <div class="detail-value description-box">{{ complaint.description }}</div>
+            </div>
+            {% if complaint.admin_note %}
+            <div class="detail-row">
+                <div class="detail-label">Admin Note</div>
+                <div class="detail-value admin-note-box">
+                    <i class="fas fa-comment me-1"></i>{{ complaint.admin_note }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if session.user_role == 'admin' %}
+            <hr>
+            <h6 class="mb-3">Update Status</h6>
+            <form method="POST" action="{{ url_for('complaints.update_status', complaint_id=complaint.id) }}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <select name="status" class="form-select" required>
+                            {% for s in statuses %}
+                            <option value="{{ s }}" {% if complaint.status == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" name="admin_note" class="form-control" placeholder="Add note for student..." value="{{ complaint.admin_note or '' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{{ url_for('complaints.all_complaints') if session.user_role == 'admin' else url_for('complaints.my_complaints') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

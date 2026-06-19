@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Complaint - Smart Campus{% endblock %}
+{% block page_title %}Submit a Complaint{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card-box">
+            <div class="card-box-header">
+                <h6><i class="fas fa-paper-plane me-2"></i>New Complaint</h6>
+            </div>
+            <div class="card-box mb-4">
+    <div class="card-box-header">
+        <h6><i class="fas fa-robot me-2"></i>AI Complaint Assistant</h6>
+    </div>
+
+    <div id="chatbox" style="height:150px; overflow:auto; border:1px solid #ddd; padding:10px; margin-bottom:10px;"></div>
+
+    <div class="input-group">
+        <input type="text" id="message" class="form-control"
+               placeholder="Describe your problem (example: wifi not working in hostel)">
+        <button class="btn btn-primary" onclick="sendMessage()">Generate Complaint</button>
+    </div>
+</div>
+
+            <form method="POST">
+
+                <!-- Complaint Title -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Complaint Title <span class="text-danger">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        class="form-control"
+                        placeholder="Brief title of your complaint"
+                        required
+                        maxlength="200">
+                </div>
+
+                <!-- Category -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Category <span class="text-danger">*</span>
+                    </label>
+                    <select
+                        id="category"
+                        name="category"
+                        class="form-select"
+                        required>
+
+                        <option value="">-- Select Category --</option>
+
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <!-- Priority -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Priority
+                    </label>
+                    <select
+                        id="priority"
+                        name="priority"
+                        class="form-select">
+
+                        <option value="Low">Low</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="High">High</option>
+
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Description <span class="text-danger">*</span>
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="form-control"
+                        rows="5"
+                        placeholder="Describe your complaint in detail..."
+                        required
+                        minlength="20"></textarea>
+
+                    <small class="text-muted">
+                        Please provide as much detail as possible (min 20 characters).
+                    </small>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Submit Complaint
+                    </button>
+
+                    <a href="{{ url_for('dashboard.index') }}"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+function sendMessage(){
+
+let message = document.getElementById("message").value;
+
+fetch("/chatbot",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({message:message})
+})
+
+.then(response=>response.json())
+.then(data=>{
+
+let chatbox=document.getElementById("chatbox");
+
+chatbox.innerHTML += "<p><b>You:</b> "+message+"</p>";
+chatbox.innerHTML += "<p><b>AI:</b> Complaint Generated and Form Filled</p>";
+
+// AUTO FILL FORM
+document.getElementById("title").value = data.title;
+document.getElementById("category").value = data.category;
+document.getElementById("description").value = data.description;
+
+document.getElementById("message").value="";
+
+})
+
+}
+
+</script>
+
+{% endblock %}

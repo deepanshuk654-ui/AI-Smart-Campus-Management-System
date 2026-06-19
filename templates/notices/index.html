@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Notice Board - Smart Campus{% endblock %}
+{% block page_title %}Digital Notice Board{% endblock %}
+{% block content %}
+<div class="card-box">
+    <div class="card-box-header">
+        <h6><i class="fas fa-bullhorn me-2"></i>Notice Board</h6>
+        {% if session.user_role == 'admin' %}
+        <a href="{{ url_for('notices.create') }}" class="btn btn-sm btn-success">
+            <i class="fas fa-plus"></i> Post Notice
+        </a>
+        {% endif %}
+    </div>
+
+    <form method="GET" class="row g-2 mb-4">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Search notices..." value="{{ search }}">
+        </div>
+        <div class="col-md-4">
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+
+    {% if notices %}
+    <div class="row g-3">
+        {% for n in notices %}
+        <div class="col-md-6 col-lg-4">
+            <div class="notice-card">
+                <div class="notice-card-header">
+                    <span class="notice-category-badge cat-{{ n.category|lower }}">{{ n.category }}</span>
+                    {% if session.user_role == 'admin' %}
+                    <div class="notice-actions">
+                        <a href="{{ url_for('notices.edit', notice_id=n.id) }}" class="btn btn-xs btn-warning" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('notices.delete', notice_id=n.id) }}" style="display:inline" onsubmit="return confirm('Delete this notice?')">
+                            <button type="submit" class="btn btn-xs btn-danger" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="notice-card-body">
+                    <h6 class="notice-card-title">{{ n.title }}</h6>
+                    <p class="notice-card-preview">{{ n.content[:100] }}{% if n.content|length > 100 %}...{% endif %}</p>
+                </div>
+                <div class="notice-card-footer">
+                    <small><i class="fas fa-user me-1"></i>{{ n.admin_name }}</small>
+                    <small><i class="fas fa-calendar me-1"></i>{{ n.created_at[:10] }}</small>
+                    <a href="{{ url_for('notices.view', notice_id=n.id) }}" class="btn btn-xs btn-outline-primary">Read More</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-sticky-note"></i>
+        <p>No notices found.</p>
+        {% if session.user_role == 'admin' %}
+        <a href="{{ url_for('notices.create') }}" class="btn btn-success btn-sm mt-2">Post First Notice</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

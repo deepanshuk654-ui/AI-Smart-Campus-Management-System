@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Post Notice - Smart Campus{% endblock %}
+{% block page_title %}Post New Notice{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+
+        <div class="card-box">
+            <div class="card-box-header">
+                <h6><i class="fas fa-plus-circle me-2"></i>Create New Notice</h6>
+            </div>
+
+            <form method="POST">
+
+                <!-- Notice Title -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Notice Title <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-control"
+                        placeholder="Enter notice title"
+                        required
+                        maxlength="200"
+                        value="{{ request.form.title if request.form.title }}"
+                    >
+                </div>
+
+
+                <!-- Category -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Category <span class="text-danger">*</span>
+                    </label>
+
+                    <select name="category" class="form-select">
+
+                        <option value="">-- Select Category --</option>
+
+                        {% for cat in categories %}
+                        <option value="{{ cat }}"
+                        {% if request.form.category == cat %}selected{% endif %}>
+                        {{ cat }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+
+                <!-- Raw Content -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Write Short Notice Text
+                    </label>
+
+                    <textarea
+                        name="content"
+                        class="form-control"
+                        rows="5"
+                        placeholder="Example: exam will be held on 25 march in room 201"
+                        required
+                    >{{ request.form.content if request.form.content }}</textarea>
+
+                    <small class="text-muted">
+                        Tip: Write short text like "exam tomorrow room 201".
+                        The system will generate a formatted notice automatically.
+                    </small>
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2 mb-3">
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="generate"
+                        class="btn btn-primary">
+
+                        <i class="fas fa-magic me-2"></i>
+                        Generate Notice
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="action"
+                        value="post"
+                        class="btn btn-success">
+
+                        <i class="fas fa-bullhorn me-2"></i>
+                        Post Notice
+                    </button>
+
+                    <a href="{{ url_for('notices.index') }}"
+                       class="btn btn-outline-secondary">
+
+                        Cancel
+                    </a>
+
+                </div>
+
+
+                <!-- Generated Notice Preview -->
+                {% if generated_content %}
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Generated Notice Preview
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        rows="10"
+                        readonly>{{ generated_content }}</textarea>
+
+                </div>
+
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

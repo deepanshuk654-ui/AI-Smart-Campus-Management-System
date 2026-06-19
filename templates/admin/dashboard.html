@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Smart Campus{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row g-4 mb-4">
+
+<!-- Total Students -->
+<div class="col-sm-6 col-xl-3">
+<div class="stat-card stat-blue">
+<div class="stat-icon"><i class="fas fa-users"></i></div>
+
+<div class="stat-info">
+<div class="stat-number">{{ total_users }}</div>
+<div class="stat-label">Total Students</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- Pending -->
+<div class="col-sm-6 col-xl-3">
+<div class="stat-card stat-orange">
+
+<div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+
+<div class="stat-info">
+<div class="stat-number">{{ pending }}</div>
+<div class="stat-label">Pending Complaints</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- Resolved -->
+<div class="col-sm-6 col-xl-3">
+<div class="stat-card stat-green">
+
+<div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+
+<div class="stat-info">
+<div class="stat-number">{{ resolved }}</div>
+<div class="stat-label">Resolved Complaints</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- Notices -->
+<div class="col-sm-6 col-xl-3">
+<div class="stat-card stat-purple">
+
+<div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+
+<div class="stat-info">
+<div class="stat-number">{{ total_notices }}</div>
+<div class="stat-label">Total Notices</div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+
+
+<div class="row g-4">
+
+<!-- Recent Complaints -->
+<div class="col-lg-7">
+
+<div class="card-box">
+
+<div class="card-box-header">
+
+<h6>
+<i class="fas fa-list-alt me-2"></i>
+Recent Complaints
+</h6>
+
+<a href="{{ url_for('complaints.all_complaints') }}"
+class="btn btn-sm btn-outline-primary">
+View All
+</a>
+
+</div>
+
+
+{% if recent_complaints %}
+
+<div class="table-responsive">
+
+<table class="table table-hover">
+
+<thead>
+
+<tr>
+<th>Student</th>
+<th>Title</th>
+<th>Category</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for c in recent_complaints %}
+
+<tr>
+
+<td>{{ c.user_name }}</td>
+
+<td>
+<a href="{{ url_for('complaints.view', complaint_id=c.id) }}">
+{{ c.title[:30] }}
+</a>
+</td>
+
+<td>
+<span class="badge bg-secondary">
+{{ c.category }}
+</span>
+</td>
+
+<td>
+
+<span class="status-badge status-{{ c.status|lower|replace(' ','-') }}">
+{{ c.status }}
+</span>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+<i class="fas fa-inbox"></i>
+
+<p>No complaints yet</p>
+
+</div>
+
+{% endif %}
+
+</div>
+</div>
+
+
+
+<!-- Right Section -->
+<div class="col-lg-5">
+
+<!-- Notices -->
+<div class="card-box">
+
+<div class="card-box-header">
+
+<h6>
+<i class="fas fa-bullhorn me-2"></i>
+Recent Notices
+</h6>
+
+<a href="{{ url_for('notices.create') }}"
+class="btn btn-sm btn-success">
+
+<i class="fas fa-plus"></i>
+New
+
+</a>
+
+</div>
+
+
+{% if recent_notices %}
+
+<div class="notice-list">
+
+{% for n in recent_notices %}
+
+<div class="notice-item">
+
+<div class="notice-category-badge cat-{{ n.category|lower }}">
+{{ n.category }}
+</div>
+
+<div class="notice-item-title">
+
+<a href="{{ url_for('notices.view', notice_id=n.id) }}">
+{{ n.title }}
+</a>
+
+</div>
+
+<div class="notice-item-date">
+
+<i class="fas fa-clock"></i>
+{{ n.created_at[:10] }}
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+<i class="fas fa-sticky-note"></i>
+
+<p>No notices posted</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+
+
+<!-- Complaint Overview -->
+<div class="card-box mt-4">
+
+<div class="card-box-header">
+
+<h6>
+<i class="fas fa-chart-pie me-2"></i>
+Complaints Overview
+</h6>
+
+</div>
+
+
+<div class="stats-overview">
+
+
+<!-- Pending -->
+<div class="progress-item">
+
+<div class="d-flex justify-content-between mb-1">
+
+<span>Pending</span>
+<span>{{ pending }}</span>
+
+</div>
+
+<div class="progress" style="height:8px">
+
+<div class="progress-bar bg-warning"
+style="width: {{ pending_percent }}%">
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- In Progress -->
+<div class="progress-item mt-3">
+
+<div class="d-flex justify-content-between mb-1">
+
+<span>In Progress</span>
+<span>{{ inprogress }}</span>
+
+</div>
+
+<div class="progress" style="height:8px">
+
+<div class="progress-bar bg-info"
+style="width: {{ progress_percent }}%">
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- Resolved -->
+<div class="progress-item mt-3">
+
+<div class="d-flex justify-content-between mb-1">
+
+<span>Resolved</span>
+<span>{{ resolved }}</span>
+
+</div>
+
+<div class="progress" style="height:8px">
+
+<div class="progress-bar bg-success"
+style="width: {{ resolved_percent }}%">
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+</div>
+
+</div>
+</div>
+
+{% endblock %}

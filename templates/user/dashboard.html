@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Smart Campus{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-sm-4">
+        <div class="stat-card stat-blue">
+            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">{{ total }}</div>
+                <div class="stat-label">Total Complaints</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="stat-card stat-orange">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">{{ pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <div class="stat-number">{{ resolved }}</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card-box">
+            <div class="card-box-header">
+                <h6><i class="fas fa-history me-2"></i>My Recent Complaints</h6>
+                <a href="{{ url_for('complaints.submit') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> New
+                </a>
+            </div>
+            {% if complaints %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr><th>Title</th><th>Category</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for c in complaints[:5] %}
+                    <tr>
+                        <td><a href="{{ url_for('complaints.view', complaint_id=c.id) }}">{{ c.title[:30] }}</a></td>
+                        <td><span class="badge bg-secondary">{{ c.category }}</span></td>
+                        <td><span class="status-badge status-{{ c.status|lower|replace(' ', '-') }}">{{ c.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ url_for('complaints.my_complaints') }}" class="btn btn-sm btn-outline-primary mt-2">View All Complaints</a>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No complaints submitted yet.</p>
+                <a href="{{ url_for('complaints.submit') }}" class="btn btn-primary btn-sm">Submit First Complaint</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card-box">
+            <div class="card-box-header">
+                <h6><i class="fas fa-bullhorn me-2"></i>Latest Notices</h6>
+                <a href="{{ url_for('notices.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            {% if recent_notices %}
+            <div class="notice-list">
+                {% for n in recent_notices %}
+                <div class="notice-item">
+                    <div class="notice-category-badge cat-{{ n.category|lower }}">{{ n.category }}</div>
+                    <div class="notice-item-title">
+                        <a href="{{ url_for('notices.view', notice_id=n.id) }}">{{ n.title }}</a>
+                    </div>
+                    <div class="notice-item-date">
+                        <i class="fas fa-clock"></i> {{ n.created_at[:10] }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-sticky-note"></i>
+                <p>No notices available.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
